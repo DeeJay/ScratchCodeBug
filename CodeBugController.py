@@ -22,8 +22,45 @@
 
 from codebug_tether import CodeBug
 import time
+import _winreg as winreg
+import itertools
+CB = None
 
-CodeBug = CodeBug()
+def enumerate_serial_ports():
+    """ Uses the Win32 registry to return a iterator of serial
+        (COM) ports existing on this computer.
+
+
+    """
+    path = 'HARDWARE\\DEVICEMAP\\SERIALCOMM'
+    try:
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path)
+    except WindowsError:
+        raise IterationError
+
+    for i in itertools.count():
+        try:
+            val = winreg.EnumValue(key, i)
+            yield (str(val[1]))#, str(val[0]))
+        except EnvironmentError:
+            break
+
+#Try and find open com port and then try to open them up
+esp = enumerate_serial_ports() # create a generator
+for i in esp:
+    print 'Found ' , i
+    try:
+        print "Testing " , i
+        board = CodeBug(i)
+        print "board:" , board
+        time.sleep(1)
+        print i , 'passed'
+        break
+    except Exception , e:
+        print '"Exception ' , e
+        pass
+
+CB = board
 
 
 class CodeBugController:
@@ -164,12 +201,12 @@ class CodeBugController:
     #Procedure to set pin mode for each pin
     def setPinMode(self):
         test = True
-        for pin in self.validPins:
-        #     #print pin
-            if (self.pinUse[pin] == self.POUTPUT):
-                print 'setting pin' , pin , ' to out'
-                if (self.pinInvert[pin] == True):
-                    self.GPIOOutput(pin,1)
+        # for pin in self.validPins:
+        # #     #print pin
+        #     if (self.pinUse[pin] == self.POUTPUT):
+        #         print 'setting pin' , pin , ' to out'
+        #         if (self.pinInvert[pin] == True):
+        #             self.GPIOOutput(pin,1)
         #         else:
         #             GPIO.output(pin,0)
         #         self.pinValue[pin] = 0
@@ -226,10 +263,10 @@ class CodeBugController:
         #print pin ," being read"
         value = 0
         try:
-            value = CodeBug.get_input(pin)
+            value = CB.get_input(pin)
         except Exception,e:
             #print "Some error reading pin" ,pin
-            print "Make sure you have plugged your Crumbe into your computer"
+            print "Make sure you have plugged your CodeBug into your computer"
             time.sleep(2)
             print str(e)
             pass
@@ -239,27 +276,12 @@ class CodeBugController:
 
     def motor(self, motor,value):
         if motor == 1:
-            CodeBug.io.set_motor1(value)
+            CB.io.set_motor1(value)
         if motor == 2:
-            CodeBug.io.set_motor2(value)
+            CB.io.set_motor2(value)
 
     def output(self, output,value):
-
-        state = CodeBug.LO
-        if value != 0:
-            state = CodeBug.HI
-        if output == "A":
-            CodeBug.io.a = CodeBug.OUTPUT
-            CodeBug.io.a = state
-        if output == "B":
-            CodeBug.io.b = CodeBug.OUTPUT
-            CodeBug.io.b = state
-        if output == "C":
-            CodeBug.io.c = CodeBug.OUTPUT
-            CodeBug.io.c = state
-        if output == "D":
-            CodeBug.io.d = CodeBug.OUTPUT
-            CodeBug.io.d = state
+        CB.set_output(output,value)
 
     def GPIOOutput(self,pin,value):
         output = "A"
@@ -272,13 +294,13 @@ class CodeBugController:
         self.output(value,output)
         
     def setPixel(self,x,y,state):
-        CodeBug.set_pixel(x, y, state)
+        CB.set_pixel(x, y, state)
 
     def clear(self):
-        CodeBug.clear()
+        CB.clear()
 
     def writeText(self, x=0 ,y=0, message="Hello", direction = "right"):
-        CodeBug.write_text(x, y, message, direction)
+        CB.write_text(x, y, message, direction)
 
 
 

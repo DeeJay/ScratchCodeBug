@@ -6,7 +6,7 @@ import codebug_tether.packets
 from codebug_tether.char_map import (char_map, StringSprite)
 
 
-DEFAULT_SERIAL_PORT = 'com5' #swmod
+DEFAULT_SERIAL_PORT = 'com1' #swmod
 NUM_CHANNELS = 7
 OUTPUT_CHANNEL_INDEX = INPUT_CHANNEL_INDEX = 5
 # Pullups for Port B (Register: WPUB)
