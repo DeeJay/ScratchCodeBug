@@ -17,7 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.0.1'  #5Aug15 Start
+Version = 'v0.0.2'  #9Aug15 Start
 print "Version",Version
 import CodeBugController
 import threading
@@ -796,7 +796,7 @@ class ScratchListener(threading.Thread):
                         dataraw = dataraw + ''.join(item.replace(' ', '')) + ' '
                 self.dataraw = dataraw
 
-                #logging.debug("processing dataItems: %s", self.dataraw)
+                logging.debug("processing dataItems: %s", self.dataraw)
                 #print "Loop processing"
                 #print dataItem, " has been converted to " ,self.dataraw
                 #print
@@ -1114,18 +1114,10 @@ class ScratchListener(threading.Thread):
                                 CodeBug.writeText(5 - i, 0,self.value)
                             CodeBug.writeTextDelay
 
-                    if self.bFindOnOff("seta"):
-                        with lock:
-                            CrumCon.output("A",self.OnOrOff)
-                    if self.bFindOnOff("setb"):
-                        with lock:
-                            CrumCon.output("B",self.OnOrOff)
-                    if self.bFindOnOff("setc"):
-                        with lock:
-                            CrumCon.output("C",self.OnOrOff)
-                    if self.bFindOnOff("setd"):
-                        with lock:
-                            CrumCon.output("D",self.OnOrOff)
+                    for leg in range(4):
+                        if self.bFindOnOff("leg"+str(leg)):
+                            with lock:
+                                CodeBug.output(leg,self.OnOrOff)
 
 
                     #end of normal pin checking

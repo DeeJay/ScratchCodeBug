@@ -281,6 +281,7 @@ class CodeBugController:
             CB.io.set_motor2(value)
 
     def output(self, output,value):
+        CB.set_leg_io(output,True)
         CB.set_output(output,value)
 
     def GPIOOutput(self,pin,value):
