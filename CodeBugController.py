@@ -46,21 +46,25 @@ def enumerate_serial_ports():
             break
 
 #Try and find open com port and then try to open them up
-esp = enumerate_serial_ports() # create a generator
-for i in esp:
-    print 'Found ' , i
-    try:
-        print "Testing " , i
-        board = CodeBug(i)
-        print "board:" , board
-        time.sleep(1)
-        print i , 'passed'
-        break
-    except Exception , e:
-        print '"Exception ' , e
-        pass
+comPort = None
+while comPort is None:
+    esp = enumerate_serial_ports() # create a generator
+    for i in esp:
+        print 'Found ' , i
+        try:
+            print "Testing " , i
+            CB = CodeBug(i)
+            print "CodeBug found on port" , i
+            time.sleep(1)
+            comPort = i
+            break
+        except Exception , e:
+            print '"Exception ' , e
+            pass
 
-CB = board
+    if comPort is None:
+        print "No CodeBug found on any com port - please check that ScratchCodeBug tether firmware is loaded"
+        time.sleep(3)
 
 
 class CodeBugController:

@@ -17,7 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.0.2'  #9Aug15 Start
+Version = 'v0.0.3'  #11Aug15 Add improved com port checking and test blink.py
 print "Version",Version
 import CodeBugController
 import threading
