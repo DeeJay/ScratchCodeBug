@@ -47,6 +47,8 @@ def enumerate_serial_ports():
 
 #Try and find open com port and then try to open them up
 comPort = None
+comPort = 'com5'
+CB = CodeBug(comPort)
 while comPort is None:
     esp = enumerate_serial_ports() # create a generator
     for i in esp:
