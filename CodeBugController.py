@@ -52,18 +52,19 @@ comPort = None
 while comPort is None:
     esp = enumerate_serial_ports() # create a generator
     for i in esp:
-        print 'Found ' , i
         try:
             print "Testing " , i
             CB = CodeBug(i)
-            row5 = CB.get(5)
-            print "reading Inputs: Value = ", row5
-
-            if row5 <> 0:
+            CB.set(0,31)
+            row0 = CB.get(0)
+            print "This should be 31 if its a codebug. Value read = ", row0
+            CB.set(0,0)
+            if row0 == 31:
+                print "Read/Write worked"
                 print "CodeBug should be be on port" , i
                 comPort = i
             time.sleep(1)
-            pass
+            break
         except Exception , e:
             print '"Exception ' , e
             pass
