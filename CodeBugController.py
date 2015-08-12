@@ -56,11 +56,13 @@ while comPort is None:
         try:
             print "Testing " , i
             CB = CodeBug(i)
-            print "reading pin 0",CB.get_pixel(0,0)
+            row5 = CB.get(5)
+            print "reading Inputs: Value = ", row5
 
-            print "CodeBug found on port" , i
+            if row5 <> 0:
+                print "CodeBug should be be on port" , i
+                comPort = i
             time.sleep(1)
-            comPort = i
             pass
         except Exception , e:
             print '"Exception ' , e
