@@ -47,8 +47,8 @@ def enumerate_serial_ports():
 
 #Try and find open com port and then try to open them up
 comPort = None
-comPort = 'com5'
-CB = CodeBug(comPort)
+#comPort = 'com5'
+#CB = CodeBug(comPort)
 while comPort is None:
     esp = enumerate_serial_ports() # create a generator
     for i in esp:
@@ -56,10 +56,12 @@ while comPort is None:
         try:
             print "Testing " , i
             CB = CodeBug(i)
+            print "reading pin 0",CB.get_pixel(0,0)
+
             print "CodeBug found on port" , i
             time.sleep(1)
             comPort = i
-            break
+            pass
         except Exception , e:
             print '"Exception ' , e
             pass
