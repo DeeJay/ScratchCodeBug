@@ -17,7 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.0.5'  #12Aug15 Use serial timeout to detect com port
+Version = 'v0.0.6'  #12Aug15 write 31 to row0 and read back to see if codebug
 print "Version",Version
 import CodeBugController
 import threading
