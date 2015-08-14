@@ -17,7 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.0.6'  #12Aug15 write 31 to row0 and read back to see if codebug
+Version = 'v0.0.7'  #13Aug15 fix scroll delay issue
 print "Version",Version
 import CodeBugController
 import threading
@@ -1112,7 +1112,7 @@ class ScratchListener(threading.Thread):
                         for i in range(len(self.value) * 5 + 5):
                             with lock:
                                 CodeBug.writeText(5 - i, 0,self.value)
-                            CodeBug.writeTextDelay
+                            time.sleep(CodeBug.writeTextDelay)
 
                     for leg in range(4):
                         if self.bFindOnOff("leg"+str(leg)):
