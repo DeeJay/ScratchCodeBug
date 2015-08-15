@@ -17,7 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.0.7'  #13Aug15 fix scroll delay issue
+Version = 'v0.0.8'  #14Aug15 Add more locks to prevent errors
 print "Version",Version
 import CodeBugController
 import threading
@@ -1107,8 +1107,8 @@ class ScratchListener(threading.Thread):
 
                     if self.bFindValue("write"):
                         #print "write", self.value
-
-                        CodeBug.clear()
+                        with lock:
+                            CodeBug.clear()
                         for i in range(len(self.value) * 5 + 5):
                             with lock:
                                 CodeBug.writeText(5 - i, 0,self.value)
