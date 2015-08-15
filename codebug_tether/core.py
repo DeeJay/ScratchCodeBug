@@ -236,20 +236,24 @@ class CodeBug(CodeBugRaw):
 
 
 def tx_rx_packet(packet, serial_port):
-    """Sends a packet and waits for a response."""
-    # print("Writing {} ({})".format(packet, time.time()))
-    # print("data", packet.to_bytes())
-    serial_port.write(packet.to_bytes())
-    if isinstance(packet, codebug_tether.packets.GetPacket):
-        # just read 1 byte
-        return struct.unpack('B', serial_port.read(1))[0]
+    try:
+        """Sends a packet and waits for a response."""
+        # print("Writing {} ({})".format(packet, time.time()))
+        # print("data", packet.to_bytes())
+        serial_port.write(packet.to_bytes())
+        if isinstance(packet, codebug_tether.packets.GetPacket):
+            # just read 1 byte
+            return struct.unpack('B', serial_port.read(1))[0]
 
-    elif (isinstance(packet, codebug_tether.packets.SetPacket) or
-          isinstance(packet, codebug_tether.packets.SetBulkPacket)):
-        # just read 1 byte
-        b = struct.unpack('B', serial_port.read(1))[0]
-        assert (b == codebug_tether.packets.AckPacket.ACK_BYTE)
+        elif (isinstance(packet, codebug_tether.packets.SetPacket) or
+              isinstance(packet, codebug_tether.packets.SetBulkPacket)):
+            # just read 1 byte
+            b = struct.unpack('B', serial_port.read(1))[0]
+            assert (b == codebug_tether.packets.AckPacket.ACK_BYTE)
 
-    elif isinstance(packet, codebug_tether.packets.GetBulkPacket):
-        return struct.unpack('B'*packet.length,
-                             serial_port.read(packet.length))
+        elif isinstance(packet, codebug_tether.packets.GetBulkPacket):
+            return struct.unpack('B'*packet.length,
+                                 serial_port.read(packet.length))
+    except Exception,e:
+        print "something went wrong with tx tx_rx_packet"
+        print Exception
