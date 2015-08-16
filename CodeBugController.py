@@ -308,6 +308,12 @@ class CodeBugController:
     def setPixel(self,x,y,state):
         CB.set_pixel(x, y, state)
 
+    def setRow(self,row,value):
+        CB.set_row(row, value)
+
+    def setCol(self,col,value):
+        CB.set_row(col, value)
+
     def clear(self):
         CB.clear()
 

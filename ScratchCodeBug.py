@@ -17,7 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.0.8'  #14Aug15 Add more locks to prevent errors
+Version = 'v0.1.0'  #16Aug15 Gone to beta - added in clear/row/col
 print "Version",Version
 import CodeBugController
 import threading
@@ -1089,6 +1089,10 @@ class ScratchListener(threading.Thread):
                             CodeBug.clear()
                             print "all"
 
+                    if self.bFind("clear"):
+                        with lock:
+                            CodeBug.clear()
+
                     for pixel in range(25):
                         py = int(pixel / 5)
                         px = pixel % 5
@@ -1103,6 +1107,28 @@ class ScratchListener(threading.Thread):
                             with lock:
                                 CodeBug.setPixel(px, py, self.OnOrOff)
 
+                    for rowcol in range(5):
+                        if self.bFindOnOff("row" + str(rowcol)):
+                            with lock:
+                                CodeBug.setRow(rowcol,31)
+                        elif self.bFindValue("row" + str(rowcol) + ","):
+                            if self.value[0:2] == "0b":
+                                with lock:
+                                    CodeBug.setRow(rowcol,int(self.value[2:],2))
+                            elif self.valueIsNumeric:
+                                with lock:
+                                    CodeBug.setRow(rowcol,int(self.value))
+
+                        if self.bFindOnOff("col" + str(rowcol)):
+                            with lock:
+                                CodeBug.setCol(rowcol,31)
+                        elif self.bFindValue("col" + str(rowcol) + ","):
+                            if self.value[0:2] == "0b":
+                                with lock:
+                                    CodeBug.setCol(rowcol,int(self.value[2:],2))
+                            elif self.valueIsNumeric:
+                                with lock:
+                                    CodeBug.setCol(rowcol,int(self.value))
 
 
                     if self.bFindValue("write"):
