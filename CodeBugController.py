@@ -292,7 +292,7 @@ class CodeBugController:
             CB.io.set_motor2(value)
 
     def output(self, output,value):
-        CB.set_leg_io(output,True)
+        CB.set_leg_io(output,0)
         CB.set_output(output,value)
 
     def GPIOOutput(self,pin,value):
@@ -308,17 +308,27 @@ class CodeBugController:
     def setPixel(self,x,y,state):
         CB.set_pixel(x, y, state)
 
+    def setRow(self,row,value):
+        CB.set_row(row, value)
+
+    def setCol(self,col,value):
+        CB.set_col(col, value)
+
     def clear(self):
         CB.clear()
 
     def writeText(self, x=0 ,y=0, message="Hello", direction = "right"):
         CB.write_text(x, y, message, direction)
 
+    def getPixel(self,x,y):
+        return(CB.get_pixel(x, y))
 
 
+    def getRow(self,row):
+        return(CB.get_row(row))
 
-
-
+    def getCol(self,col):
+        return(CB.get_col(col))
 
 
 

@@ -17,7 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.0.8'  #14Aug15 Add more locks to prevent errors
+Version = 'v0.1.1'  #17Aug15 Lots of additions including leg control
 print "Version",Version
 import CodeBugController
 import threading
@@ -128,8 +128,10 @@ class ScratchSender(threading.Thread):
         sensor_name = ["Leg0","Leg1","Leg2","Leg3","ButtonA","ButtonB"][pin]
         sensorValue = value
         #print "sensor name", sensor_name
-
+        if pin > 3:
+            sensorValue = "on" if value == 1 else "off"
         bcast_str = '"' + sensor_name + '" ' + str(sensorValue)
+
         msgQueue.put(((5,"sensor-update " + bcast_str)))
         logging.debug("sensor change put in queue:%s", bcast_str)
         #print pin , sghGC.pinTrigger[pin]
@@ -1089,6 +1091,10 @@ class ScratchListener(threading.Thread):
                             CodeBug.clear()
                             print "all"
 
+                    if self.bFind("clear"):
+                        with lock:
+                            CodeBug.clear()
+
                     for pixel in range(25):
                         py = int(pixel / 5)
                         px = pixel % 5
@@ -1102,7 +1108,53 @@ class ScratchListener(threading.Thread):
                             #print "match","pixel"+ str(pixel)
                             with lock:
                                 CodeBug.setPixel(px, py, self.OnOrOff)
+                        if self.bFindValue("get" + str(px) + "," + str(py)):
+                            with lock:
+                                state = CodeBug.getPixel(px, py)
+                            sensor_name = 'pixelvalue'
+                            bcast_str = 'sensor-update "%s" "''%s''"' % (sensor_name, state)
+                            msgQueue.put((0,bcast_str))
+                        elif self.bFindValue("get"+ str(pixel)):
+                            with lock:
+                                state = CodeBug.getPixel(px, py)
+                            sensor_name = 'pixelvalue'
+                            bcast_str = 'sensor-update "%s" "''%s''"' % (sensor_name, state)
+                            msgQueue.put((0,bcast_str))
 
+                    for rowcol in range(5):
+                        if self.bFindValue("getrow" + str(rowcol)):
+                            with lock:
+                                value = CodeBug.getRow(rowcol)
+                            sensor_name = 'rowvalue'
+                            bcast_str = 'sensor-update "%s" "''%s''"' % (sensor_name, value)
+                            msgQueue.put((0,bcast_str))
+                        elif self.bFindOnOff("row" + str(rowcol)):
+                            with lock:
+                                CodeBug.setRow(rowcol,31)
+                        elif self.bFindValue("row" + str(rowcol) + ","):
+                            if self.value[0:2] == "0b":
+                                with lock:
+                                    CodeBug.setRow(rowcol,int(self.value[2:],2))
+                            elif self.valueIsNumeric:
+                                with lock:
+                                    CodeBug.setRow(rowcol,int(self.value))
+
+                        if self.bFindValue("getcol" + str(rowcol)):
+                            with lock:
+                                value = CodeBug.getCol(rowcol)
+                            sensor_name = 'colvalue'
+                            bcast_str = 'sensor-update "%s" "''%s''"' % (sensor_name, value)
+                            msgQueue.put((0,bcast_str))
+                        elif self.bFindOnOff("col" + str(rowcol)):
+                            with lock:
+                                CodeBug.setCol(rowcol,31)
+                        elif self.bFindValue("col" + str(rowcol) + ","):
+                            if self.value[0:2] == "0b":
+                                with lock:
+                                    CodeBug.setCol(rowcol,int(self.value[2:],2))
+                            elif self.valueIsNumeric:
+                                with lock:
+                                    CodeBug.setCol(rowcol,int(self.value))
 
 
                     if self.bFindValue("write"):
@@ -1113,6 +1165,37 @@ class ScratchListener(threading.Thread):
                             with lock:
                                 CodeBug.writeText(5 - i, 0,self.value)
                             time.sleep(CodeBug.writeTextDelay)
+
+                    if self.bFindValue("scroll"):
+                        if self.value == "left":
+                            for row in range(5):
+                                old = None
+                                with lock:
+                                    old = CodeBug.getRow(row)
+                                with lock:
+                                    CodeBug.setRow(row,(30 & (old * 2)))
+                        if self.value == "right":
+                            for row in range(5):
+                                old = None
+                                with lock:
+                                    old = CodeBug.getRow(row)
+                                with lock:
+                                    CodeBug.setRow(row,int(old / 2))
+                        if self.value == "down":
+                            for col in range(5):
+                                old = None
+                                with lock:
+                                    old = CodeBug.getCol(col)
+                                with lock:
+                                    CodeBug.setCol(col,(30 & (old * 2)))
+                        if self.value == "up":
+                            for col in range(5):
+                                old = None
+                                with lock:
+                                    old = CodeBug.getCol(col)
+                                with lock:
+                                    CodeBug.setCol(col,int(old / 2))
+
 
                     for leg in range(4):
                         if self.bFindOnOff("leg"+str(leg)):
