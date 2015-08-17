@@ -6,12 +6,12 @@ import codebug_tether.packets
 from codebug_tether.char_map import (char_map, StringSprite)
 
 
-DEFAULT_SERIAL_PORT = 'com1' #swmod
+DEFAULT_SERIAL_PORT = '/dev/ttyACM0'
 NUM_CHANNELS = 7
 OUTPUT_CHANNEL_INDEX = INPUT_CHANNEL_INDEX = 5
-# Pullups for Port B (Register: WPUB)
-#PULLUP_CHANNEL_INDEX = 6
 IO_DIRECTION_CHANNEL = 6
+# Pullups for Port B (Register: WPUB)
+PULLUP_CHANNEL_INDEX = 7
 
 
 class CodeBugRaw(object):
@@ -49,7 +49,7 @@ class CodeBug(CodeBugRaw):
     # Adds fancy, easy-to-use features to CodeBugRaw.
 
     def __init__(self, serial_port=DEFAULT_SERIAL_PORT):
-        super(CodeBug, self).__init__(serial.Serial(serial_port,timeout=2))
+        super(CodeBug, self).__init__(serial.Serial(serial_port, timeout=2))
 
     def _int_input_index(self, input_index):
         """Returns an integer input index."""
@@ -85,52 +85,19 @@ class CodeBug(CodeBugRaw):
         input_index = self._int_input_index(input_index)
         self.set(PULLUP_CHANNEL_INDEX, state << input_index, or_mask=True)
 
-    # def set_output(self, output_index, state):
-    #     """Sets the output index to state (CodeBug only have outputs 1 and 3)
-    #     """
-    #     state = 1 if state else 0
-    #     state <<= output_index
-    #     #print(bin(state))
-    #     self.set(OUTPUT_CHANNEL_INDEX, state, or_mask=True)
-    #
-    # def set_leg_io(self, leg_index, direction):
-    #     """Sets the I/O direction of the leg at index."""
-    #     io_state = self.get(IO_DIRECTION_CHANNEL)#[0]
-    #     print "iostate", io_state
-    #     if direction:
-    #         io_state |= 1 << leg_index
-    #     else:
-    #         io_state &= 0xff ^ (1 << leg_index)
-    #     self.set(IO_DIRECTION_CHANNEL, io_state)
-    #     print "iostate2", io_state
-    #     io_state = self.get(IO_DIRECTION_CHANNEL)#[0]
-    #     print "iostate3", io_state
-
     def set_output(self, output_index, state):
-        """Sets the output at index to state."""
-        output_state = self.get(OUTPUT_CHANNEL_INDEX)#[0]
-        print "output state",output_state
-        if state:
-            output_state |= 1 << output_index
-        else:
-            output_state &= 0xff ^ (1 << output_index)
-        self.set(OUTPUT_CHANNEL_INDEX, output_state,or_mask=True)
-        print "output state2",output_state
-        output_state = self.get(OUTPUT_CHANNEL_INDEX)#[0]
-        print "output state again ",output_state
+        """Sets the output index to state (CodeBug only have outputs 1 and 3)
+        """
+        state = 1 if state else 0
+        state <<= output_index
+        # print(bin(state))
+        self.set(OUTPUT_CHANNEL_INDEX, state, or_mask=True)
 
     def set_leg_io(self, leg_index, direction):
         """Sets the I/O direction of the leg at index."""
-        io_state = self.get(IO_DIRECTION_CHANNEL)#[0]
-        print "io_state",io_state
-        if direction:
-            io_state |= 1 << leg_index
-        else:
-            io_state &= 0xff ^ (1 << leg_index)
-        self.set(IO_DIRECTION_CHANNEL, io_state,or_mask=True)
-        print "io_state2",io_state
-        io_state = self.get(IO_DIRECTION_CHANNEL)#[0]
-        print "io_state again",io_state
+        # io_config_state = leg_index in upper nibble and state in lower nibble
+        io_config_state = ((leg_index << 4) & 0xf0) | (direction & 0x0f)
+        self.set(IO_DIRECTION_CHANNEL, io_config_state)
 
     def clear(self):
         """Clears the pixels on CodeBug.
@@ -253,4 +220,3 @@ def tx_rx_packet(packet, serial_port):
     elif isinstance(packet, codebug_tether.packets.GetBulkPacket):
         return struct.unpack('B'*packet.length,
                              serial_port.read(packet.length))
-
