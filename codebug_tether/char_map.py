@@ -114,8 +114,8 @@ class CharSprite(object):
         if char not in char_map:
             char = 'unknown'
         self.pixel_state = [[(char_map[char][row] >> shift) & 0x1
-                           for shift in reversed(range(4))]
-                          for row in range(5)]
+                             for shift in reversed(range(4))]
+                            for row in range(5)]
 
 
 class StringSprite(object):
@@ -132,7 +132,7 @@ class StringSprite(object):
             self.height = 6 * len(string)
 
         self.pixel_state = [[0 for i in range(self.width)]
-                          for j in range(self.height)]
+                            for j in range(self.height)]
 
         for char_index, c in enumerate(self.string):
             char_sprite = CharSprite(c)
