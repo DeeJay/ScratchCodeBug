@@ -17,7 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.1.2'  #20Aug15 merge in Issue#9 fix from GitHub
+Version = 'v0.1.2'  #20Aug15 merge in Issue#9 fix from GitHub.
 import CodeBugController
 import threading
 import socket
