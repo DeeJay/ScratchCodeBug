@@ -17,8 +17,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Version = 'v0.1.1'  #17Aug15 Lots of additions including leg control
-print "Version",Version
+Version = 'v0.1.2'  #20Aug15 merge in Issue#9 fix from GitHub.
 import CodeBugController
 import threading
 import socket
@@ -1089,7 +1088,9 @@ class ScratchListener(threading.Thread):
                     if self.bFindOnOff("all"):
                         with lock:
                             CodeBug.clear()
-                            print "all"
+                            for leg in range(4):
+                                CodeBug.setLegInput(leg)
+
 
                     if self.bFind("clear"):
                         with lock:

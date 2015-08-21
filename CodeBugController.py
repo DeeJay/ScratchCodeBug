@@ -330,6 +330,10 @@ class CodeBugController:
     def getCol(self,col):
         return(CB.get_col(col))
 
+    def setLegInput(self, leg):
+        CB.set_leg_io(leg,1)
+
+
 
 
 
